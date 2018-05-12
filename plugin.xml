@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin 
+  xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-um-share" version="1.0.0">
+  <name>UMShare</name>
+  <description>Cordova Plugin for Umeng Share</description>
+  <license>ISC</license>
+  <keywords>cordova,umeng,social,share</keywords>
+  <js-module src="www/UMShare.js" name="UMShare">
+    <clobbers target="UMShare" />
+  </js-module>
+  <platform name="ios">
+    <pod name="UMCShare/UI" />
+    <config-file target="config.xml" parent="/*">
+      <feature name="UMShare">
+        <param name="ios-package" value="UMShare" />
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+    <header-file src="src/ios/UMShare.h" />
+    <source-file src="src/ios/UMShare.m" />
+  </platform>
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="UMShare">
+        <param name="android-package" value="news.chen.yu.ionic.UMShare"/>
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <activity android:name="com.umeng.socialize.editorpage.ShareActivity" android:excludeFromRecents="true" android:theme="@style/Theme.UMDefault"></activity>
+    </config-file>
+    <framework src="src/android/UMShare.gradle" custom="true" type="gradleReference" />
+    <source-file src="src/android/UMShare.java" target-dir="src/news/chen/yu/ionic" />
+  </platform>
+</plugin>

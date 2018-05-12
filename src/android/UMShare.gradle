@@ -1,0 +1,8 @@
+repositories {
+    mavenCentral()    
+}
+
+dependencies {
+    compile 'com.umeng.sdk:share-core:latest.integration'
+    compile 'com.umeng.sdk:shareboard-widget:latest.integration'
+}
