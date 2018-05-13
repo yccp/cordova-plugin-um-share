@@ -1,23 +1,9 @@
-#import "UShare.h"
-#import <UShareUI/UShareUI.h>
+#import "UMShare.h"
 
-@implementation UShare
+@implementation UMShare
 - (void)pluginInitialize
 {
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
-    
-}
-
-- (void)finishLaunching:(NSNotification *)notification
-{
-    // Put here the code that should be on the AppDelegate.m
-    // 获取IOS的Appkey
-    NSString *appKey = [[self.commandDelegate settings] objectForKey:@"ushare_ios_key"];
-    NSLog(@"你的appKey为%@", appKey);
-    
-    /* 设置友盟appkey */
-    [[UMSocialManager defaultManager] setUmSocialAppkey:appKey];
 }
 
 // 支持所有iOS系统

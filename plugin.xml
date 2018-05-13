@@ -9,6 +9,9 @@
     <clobbers target="UMShare" />
   </js-module>
   <platform name="ios">
+    <pods-config ios-min-version="9.0" use-frameworks="true">
+      <source url="https://github.com/CocoaPods/Specs.git"/>
+    </pods-config>
     <pod name="UMCShare/UI" />
     <config-file target="config.xml" parent="/*">
       <feature name="UMShare">

@@ -1,7 +1,8 @@
 #import <Cordova/CDVPlugin.h>
-#import <UMSocialCore/UMSocialCore.h>
+#import <UMShare/UMShare.h>
+#import <UShareUI/UShareUI.h>
 
-@interface UShare : CDVPlugin
+@interface UMShare : CDVPlugin
 
 - (void)open:(CDVInvokedUrlCommand *)command;
 
