@@ -18,7 +18,7 @@ ionic cordova plugin add cordova-plugin-um-share
 
 
 ## 子插件
-只有安装相应的子插件才能显示相应选项
+只有安装相应的子插件才能显示和使用相应选项
 
 - [cordova-plugin-um-share-wechat](https://github.com/yccp/cordova-plugin-um-share-wechat.git)
 
@@ -33,10 +33,20 @@ window.UMShare.open({
   url: 'http://xxx.xxx/xxx', // 链接
   title: 'xxx', // 标题
   desc: 'xxx' // 简介
-}, success => {
-  console.log(success); // success为bool类型
+}, () => {
+  console.log('success');
 }, e => {
   console.error(e);
 });
+```
 
+>授权
+```js
+window.UMShare.auth({
+  platform: 1, // 1为微信，4为QQ，其它暂没有
+}, userInfo => {
+  console.log(userInfo);
+}, e => {
+  console.error(e);
+});
 ```

@@ -53,8 +53,6 @@
 
 - (void)auth:(CDVInvokedUrlCommand *)command
 {
-    UMSocialLogInfo(@"%ld", (long)UMSocialPlatformType_WechatSession); // 1
-    UMSocialLogInfo(@"%ld", (long)UMSocialPlatformType_QQ); // 4
     // 获取参数
     NSDictionary* arguments = [command argumentAtIndex:0];
     int platform = [[arguments objectForKey:@"platform"] intValue];
