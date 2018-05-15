@@ -10,6 +10,9 @@ module.exports = {
    * @param {Function} errorCallback ['fail'|'cancel'|'invalid']
    */
   open: function (param, successCallback, errorCallback) {
-    cordova.exec(successCallback, errorCallback, "UMShare", "open", [JSON.stringify(param)]);
+    cordova.exec(successCallback, errorCallback, "UMShare", "open", [param]);
+  },
+  auth: function (param, successCallback, errorCallback) {
+    cordova.exec(successCallback, errorCallback, "UMShare", "auth", [param]);
   }
 };

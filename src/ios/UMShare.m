@@ -3,41 +3,29 @@
 @implementation UMShare
 - (void)pluginInitialize
 {
-    
 }
 
-// 支持所有iOS系统
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (void)handleOpenURL:(NSNotification *)notification
 {
-    //6.3的新的API调用，是为了兼容国外平台(例如:新版facebookSDK,VK等)的调用[如果用6.2的api调用会没有回调],对国内平台没有影响
-    BOOL result = [[UMSocialManager defaultManager] handleOpenURL:url sourceApplication:sourceApplication annotation:annotation];
-    if (!result) {
-        // 其他如支付等SDK的回调
+    NSURL* url = [notification object];
+    NSLog(@"URL host: %@", url.host);
+    if([url.host isEqualToString:@"oauth"] || [url.host hasPrefix:@"platformId="]) {
+        [[UMSocialManager defaultManager] handleOpenURL:url];
     }
-    return result;
 }
 
 - (void)open:(CDVInvokedUrlCommand *)command
 {
-    // 获取参数
-    NSError* jsonError;
-    NSString* arguments = [command argumentAtIndex:0];
-    NSData* objectData = [arguments dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary* options = [NSJSONSerialization JSONObjectWithData:objectData
-                                                            options:NSJSONReadingMutableContainers
-                                                              error:&jsonError];
-    NSLog(@"你的分享参数%@", options);
-
     //创建分享消息对象
     UMSocialMessageObject *messageObject = [UMSocialMessageObject messageObject];
     
     //创建网页内容对象
+    NSDictionary* options = [command.arguments objectAtIndex:0];
     NSString* image = options[@"image"];
     NSString* title = options[@"title"];
     NSString* desc = options[@"desc"];
     NSString* url = options[@"url"];
     UMShareWebpageObject *shareObject = [UMShareWebpageObject shareObjectWithTitle:title descr:desc thumImage:image];
-    //设置网页地址
     shareObject.webpageUrl = url;
     
     //分享消息对象设置分享内容对象
@@ -50,20 +38,57 @@
         //调用分享接口
         [[UMSocialManager defaultManager] shareToPlatform:platformType messageObject:messageObject currentViewController:self.viewController completion:^(id data, NSError *error) {
             if (error) {
-                UMSocialLogInfo(@"************Share fail with error %@*********",error);
+                NSLog(@"************Share fail with error %@*********",error);
                 [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription] callbackId:command.callbackId];
             } else {
                 if ([data isKindOfClass:[UMSocialShareResponse class]]) {
-                    UMSocialShareResponse *resp = data;
-                    //分享结果消息
-                    UMSocialLogInfo(@"response message is %@",resp.message);
-                    //第三方原始返回的数据
-                    UMSocialLogInfo(@"response originalResponse data is %@",resp.originalResponse);
-                    // 返回成功结果
-                    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:resp.message] callbackId:command.callbackId];
+                    NSLog(@"Share response");
+                    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
                     
-                } else {
-                    UMSocialLogInfo(@"response data is %@",data);
+                }
+            }
+        }];
+    }];
+}
+
+- (void)auth:(CDVInvokedUrlCommand *)command
+{
+    UMSocialLogInfo(@"%ld", (long)UMSocialPlatformType_WechatSession); // 1
+    UMSocialLogInfo(@"%ld", (long)UMSocialPlatformType_QQ); // 4
+    // 获取参数
+    NSDictionary* arguments = [command argumentAtIndex:0];
+    int platform = [[arguments objectForKey:@"platform"] intValue];
+    [self.commandDelegate runInBackground:^{
+        
+    }];
+    //开始授权
+    [self.commandDelegate runInBackground:^{
+        [[UMSocialManager defaultManager] getUserInfoWithPlatform:platform currentViewController:self.viewController completion:^(id data, NSError *error) {
+            if (error) {
+                NSLog(@"************Auth fail with error %@*********",error);
+                [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription] callbackId:command.callbackId];
+            } else {
+                if ([data isKindOfClass:[UMSocialAuthResponse class]]) {
+                    NSLog(@"Auth response");
+                }
+                if ([data isKindOfClass:[UMSocialUserInfoResponse class]]) {
+                    NSLog(@"User Info response");
+                    UMSocialUserInfoResponse *resp = data;
+                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+                    NSDictionary* dict = @{
+                                           @"uid": resp.uid != nil ? resp.uid : @"",
+                                           @"openid": resp.openid != nil ? resp.openid : @"",
+                                           @"accessToken": resp.accessToken != nil ? resp.accessToken : @"",
+                                           @"refreshToken": resp.refreshToken != nil ? resp.refreshToken : @"",
+                                           @"expiration": resp.expiration != nil ? [dateFormatter stringFromDate:resp.expiration] : @"",
+                                           @"name": resp.name != nil ? resp.name : @"",
+                                           @"iconurl": resp.iconurl != nil ? resp.iconurl : @"",
+                                           @"gender": resp.gender != nil ? resp.gender : @""
+                                           };
+                    NSLog(@"dict: %@", dict);
+                    
+                    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict] callbackId:command.callbackId];
                 }
             }
         }];

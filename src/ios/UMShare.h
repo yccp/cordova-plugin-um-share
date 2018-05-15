@@ -5,5 +5,6 @@
 @interface UMShare : CDVPlugin
 
 - (void)open:(CDVInvokedUrlCommand *)command;
+- (void)auth:(CDVInvokedUrlCommand *)command;
 
 @end
