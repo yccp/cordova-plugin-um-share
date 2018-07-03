@@ -9,7 +9,7 @@
 {
     NSURL* url = [notification object];
     NSLog(@"URL host: %@", url.host);
-    if([url.host isEqualToString:@"oauth"] || [url.host isEqualToString:@"qzapp"] || [url.host hasPrefix:@"platformId="]) {
+    if([url.host isEqualToString:@"oauth"] || [url.host isEqualToString:@"response"] || [url.host isEqualToString:@"qzapp"] || [url.host hasPrefix:@"platformId="]) {
         [[UMSocialManager defaultManager] handleOpenURL:url];
     }
 }
@@ -62,7 +62,6 @@
             NSLog(@"************Auth fail with error %@*********",error);
             [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription] callbackId:command.callbackId];
         } else {
-            NSLog(@"Auth~~~");
             if ([data isKindOfClass:[UMSocialAuthResponse class]]) {
                 NSLog(@"Auth response");
             }
