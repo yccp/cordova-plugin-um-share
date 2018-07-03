@@ -114,7 +114,7 @@ public class UMShare extends CordovaPlugin {
                 case 1:
                     platform = SHARE_MEDIA.WEIXIN;
                     break;
-                case 6:
+                case 4:
                     platform = SHARE_MEDIA.QQ;
                     break;
                 default:
