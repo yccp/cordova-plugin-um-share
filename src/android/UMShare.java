@@ -24,6 +24,12 @@ public class UMShare extends CordovaPlugin {
     public static Vector<SHARE_MEDIA> mediaList = new Vector<SHARE_MEDIA>();
 
     @Override
+    protected void pluginInitialize() {
+        super.pluginInitialize();
+        cordova.setActivityResultCallback(this);
+    }
+
+    @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("open")) {
             JSONObject options = args.getJSONObject(0);
@@ -111,6 +117,9 @@ public class UMShare extends CordovaPlugin {
             SHARE_MEDIA platform;
             int platformIndex = options.getInt("platform");
             switch (platformIndex) {
+                case 0:
+                    platform = SHARE_MEDIA.SINA;
+                    break;
                 case 1:
                     platform = SHARE_MEDIA.WEIXIN;
                     break;
@@ -125,22 +134,25 @@ public class UMShare extends CordovaPlugin {
             UMShareAPI.get(cordova.getActivity()).getPlatformInfo(cordova.getActivity(), platform, new UMAuthListener() {
                 @Override
                 public void onStart(SHARE_MEDIA share_media) {
-
+                    Log.i("um-share", "start");
                 }
 
                 @Override
                 public void onComplete(SHARE_MEDIA share_media, int i, Map<String, String> map) {
+                    Log.i("um-share", "completed");
                     JSONObject json = new JSONObject(map);
                     callbackContext.success(json);
                 }
 
                 @Override
                 public void onError(SHARE_MEDIA share_media, int i, Throwable throwable) {
+                    Log.i("um-share", throwable.getLocalizedMessage());
                     callbackContext.error(throwable.getLocalizedMessage());
                 }
 
                 @Override
                 public void onCancel(SHARE_MEDIA share_media, int i) {
+                    Log.i("um-share", "cancelled");
                     callbackContext.error("用户取消");
                 }
             });
@@ -154,6 +166,7 @@ public class UMShare extends CordovaPlugin {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.i("um-share", "on result");
         UMShareAPI.get(cordova.getActivity()).onActivityResult(requestCode, resultCode, data);
     }
 }
